@@ -8,8 +8,6 @@ const {
   deleteUser
 } = require('../controllers/users');
 
-let db = [{ name: 'Leonard' }];
-
 router.get('/', getUser);
 
 router.post('/', createUser);
