@@ -4,6 +4,8 @@ const bodyparser = require('koa-bodyparser');
 const routing = require('./routes');
 const error = require('koa-json-error');
 const parameter = require('koa-parameter');
+const mongoose = require('mongoose');
+const { connectionStr } = require('./config');
 
 // app.use(async (ctx, next) => {
 //   try {
@@ -16,10 +18,19 @@ const parameter = require('koa-parameter');
 //   }
 // }); //error handler with own design
 
+mongoose.connect(
+  connectionStr,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  () => {
+    console.log('Connect to MongoDB Success');
+  }
+);
+mongoose.connection.on('error', console.error);
+
 app.use(
   error({
     postFormat: (e, { stack, ...rest }) =>
-      process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
+      process.env.NODE_ENV === 'production' ? rest : { stack, ...rest } //setting error format base on env
   })
 );
 
