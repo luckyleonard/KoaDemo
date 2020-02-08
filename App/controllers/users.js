@@ -1,34 +1,38 @@
-let db = [{ name: 'Leonard' }];
+const User = require('../models/users');
 
 class userCtl {
-  getUser(ctx) {
-    ctx.body = db;
+  async getUser(ctx) {
+    ctx.body = await User.find();
   }
-  getUserById(ctx) {
-    if (ctx.params.id * 1 >= db.length) {
-      ctx.status(412, 'ID is out of range');
+  async getUserById(ctx) {
+    const user = await User.findById(ctx.params.id);
+    if (!user) {
+      ctx.throw(404, 'User is not defined');
     }
-    ctx.body = db[ctx.params.id * 1];
+    ctx.body = user;
   }
-  createUser(ctx) {
+  async createUser(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true }
     });
-    db.push(ctx.request.body);
-    ctx.body = ctx.request.body;
+    const user = await new User(ctx.request.body).save();
+    ctx.body = user;
   }
-  updateUser(ctx) {
+  async updateUser(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true }
     });
-    db[ctx.params.id * 1] = ctx.request.body;
-    ctx.body = ctx.request.body;
-  }
-  deleteUser(ctx) {
-    if (ctx.params.id * 1 >= db.length) {
-      ctx.status(412, 'ID is out of range');
+    const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
+    if (!user) {
+      ctx.throw(404, 'User is not defined');
     }
-    db.splice(ctx.params.id * 1, 1);
+    ctx.body = user;
+  }
+  async deleteUser(ctx) {
+    const user = await User.findByIdAndDelete(ctx.params.id);
+    if (!user) {
+      ctx.throw(404, 'User is not defined');
+    }
     ctx.status = 204;
   }
 }
