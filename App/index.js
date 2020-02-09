@@ -20,7 +20,7 @@ const { connectionStr } = require('./config');
 
 mongoose.connect(
   connectionStr,
-  { useNewUrlParser: true, useUnifiedTopology: true },
+  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
   () => {
     console.log('Connect to MongoDB Success');
   }
