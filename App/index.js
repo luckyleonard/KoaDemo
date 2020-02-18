@@ -1,10 +1,11 @@
 const Koa = require('koa');
 const app = new Koa();
 const bodyparser = require('koa-bodyparser');
-const routing = require('./routes');
 const error = require('koa-json-error');
 const parameter = require('koa-parameter');
 const mongoose = require('mongoose');
+
+const routing = require('./routes');
 const { connectionStr } = require('./config');
 
 // app.use(async (ctx, next) => {
