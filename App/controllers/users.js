@@ -62,6 +62,12 @@ class userCtl {
     const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' });
     ctx.body = { token };
   }
+  async checkOwner(ctx, next) {
+    if (ctx.params.id !== ctx.state.user._id) {
+      ctx.throw(403, 'Authorization denied');
+    }
+    await next();
+  }
 }
 
 module.exports = new userCtl();

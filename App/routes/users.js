@@ -9,7 +9,8 @@ const {
   createUser,
   updateUser,
   deleteUser,
-  login
+  login,
+  checkOwner
 } = require('../controllers/users');
 
 const auth = async (ctx, next) => {
@@ -30,9 +31,9 @@ router.post('/', createUser);
 
 router.get('/:id', getUserById);
 
-router.patch('/:id', auth, updateUser); //partly update
+router.patch('/:id', auth, checkOwner, updateUser); //partly update
 
-router.delete('/:id', auth, deleteUser);
+router.delete('/:id', auth, checkOwner, deleteUser);
 
 router.post('/login', login);
 
