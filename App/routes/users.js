@@ -1,4 +1,5 @@
-const jsonwebtoken = require('jsonwebtoken');
+// const jsonwebtoken = require('jsonwebtoken');
+const jwt = require('koa-jwt');
 const { secret } = require('../config');
 const Router = require('koa-router');
 const router = new Router({ prefix: '/users' });
@@ -13,6 +14,7 @@ const {
   checkOwner
 } = require('../controllers/users');
 
+/*自写middleware
 const auth = async (ctx, next) => {
   const { authorization = '' } = ctx.request.header; //短路语法，如果authorization为空则赋值空字符串
   const token = authorization.replace('Bearer ', ''); //替换从请求头接收的authorization字符串里的‘Bearer ’为空
@@ -23,7 +25,9 @@ const auth = async (ctx, next) => {
     ctx.throw(401, err.message);
   }
   await next();
-};
+};*/
+
+const auth = jwt({ secret });
 
 router.get('/', getUser);
 
