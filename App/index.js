@@ -2,7 +2,7 @@ const Koa = require('koa');
 const app = new Koa();
 const bodyparser = require('koa-bodyparser');
 const error = require('koa-json-error');
-const parameter = require('koa-parameter');
+const parameter = require('koa-parameter'); //check parameters format,provide verifyParams Method
 const mongoose = require('mongoose');
 
 const routing = require('./routes');

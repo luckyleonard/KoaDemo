@@ -6,6 +6,7 @@ class userCtl {
   async getUser(ctx) {
     ctx.body = await User.find();
   }
+
   async getUserById(ctx) {
     const user = await User.findById(ctx.params.id);
     if (!user) {
@@ -13,6 +14,7 @@ class userCtl {
     }
     ctx.body = user;
   }
+
   async createUser(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true },
@@ -26,6 +28,7 @@ class userCtl {
     const user = await new User(ctx.request.body).save();
     ctx.body = user;
   }
+
   async updateUser(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: false },
@@ -42,6 +45,7 @@ class userCtl {
     }
     ctx.body = user;
   }
+
   async deleteUser(ctx) {
     const user = await User.findByIdAndDelete(ctx.params.id);
     if (!user) {
@@ -49,6 +53,7 @@ class userCtl {
     }
     ctx.status = 204;
   }
+
   async login(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true },
@@ -62,6 +67,7 @@ class userCtl {
     const token = jsonwebtoken.sign({ _id, name }, secret, { expiresIn: '1d' });
     ctx.body = { token };
   }
+
   async checkOwner(ctx, next) {
     if (ctx.params.id !== ctx.state.user._id) {
       ctx.throw(403, 'Authorization denied');
