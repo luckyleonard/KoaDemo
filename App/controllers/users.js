@@ -18,7 +18,7 @@ class userCtl {
   async createUser(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true },
-      password: { type: 'string', required: true }
+      password: { type: 'string', required: true },
     });
     const { name } = ctx.request.body;
     const existedUser = await User.findOne({ name });
@@ -32,7 +32,14 @@ class userCtl {
   async updateUser(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: false },
-      password: { type: 'string', required: false }
+      password: { type: 'string', required: false },
+      avatar_url: { type: 'string', required: false },
+      gender: { type: 'string', required: false },
+      headline: { type: 'string', required: false },
+      location: { type: 'array', itemType: 'string', required: false },
+      business: { type: 'string', required: false },
+      employements: { type: 'array', itemType: 'object', required: false },
+      educations: { type: 'array', itemType: 'object', required: false },
     });
     const { name } = ctx.request.body;
     const existedUser = await User.findOne({ name });
@@ -57,7 +64,7 @@ class userCtl {
   async login(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true },
-      password: { type: 'string', required: true }
+      password: { type: 'string', required: true },
     });
     const user = await User.findOne(ctx.request.body);
     if (!user) {
