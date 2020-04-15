@@ -8,7 +8,13 @@ class userCtl {
   }
 
   async getUserById(ctx) {
-    const user = await User.findById(ctx.params.id);
+    const { fields } = ctx.query;
+    const selectFields = fields
+      .split(';')
+      .filter((field) => field)
+      .map((field) => '+' + field)
+      .join(' ');
+    const user = await User.findById(ctx.params.id).select(selectFields);
     if (!user) {
       ctx.throw(404, 'User is not defined');
     }
