@@ -103,6 +103,14 @@ class userCtl {
     ctx.body = users;
   }
 
+  async checkUserExist(ctx, next) {
+    const user = await User.findById(ctx.params.id);
+    if (!user) {
+      ctx.throw(404, 'user is not exist');
+    }
+    await next();
+  }
+
   async follow(ctx) {
     const me = await User.findById(ctx.state.user._id).select('+following');
     //获取关注者列表，ctx.state.user._id解析jwt获得用户id
