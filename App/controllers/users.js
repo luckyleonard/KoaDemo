@@ -13,7 +13,7 @@ class userCtl {
       .split(';')
       .filter((field) => field)
       .map((field) => '+' + field)
-      .join(' ');
+      .join(' '); ///使用空格隔开进行拼接 拼出来的字符串 “+location +educations” 用于让API返回指定字段
     const user = await User.findById(ctx.params.id).select(selectFields);
     if (!user) {
       ctx.throw(404, 'User is not defined');
@@ -86,6 +86,41 @@ class userCtl {
       ctx.throw(403, 'Authorization denied');
     }
     await next();
+  }
+
+  async listFollowing(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select('+following')
+      .populate('following'); //通过路由中获取的id找到用户，显示following字段，populate函数直接获取following内存储连接的user信息
+    if (!user) {
+      ctx.throw(404);
+    }
+    ctx.body = user.following;
+  }
+
+  async follow(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+following');
+    //获取关注者列表，ctx.state.user._id解析jwt获得用户id
+    if (!me.following.map((id) => id.toString()).includes(ctx.params.id)) {
+      me.following.push(ctx.params.id);
+      //将id推入following列表
+      me.save(); //存入数据库
+    } //防止重复逻辑
+    ctx.status = 204; //返回成功状态
+  }
+
+  async unfollow(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+following');
+    const index = me.following
+      .map((id) => id.toString())
+      .indexOf(ctx.params.id);
+    //获取取消关注的人的索引
+    if (index > -1) {
+      //index从0开始，如未找到就是-1
+      me.following.splice(index, 1);
+      me.save(); //存入数据库
+    } //只删除关注的人逻辑
+    ctx.status = 204; //返回成功状态
   }
 }
 

@@ -1,8 +1,8 @@
 const Koa = require('koa');
 const app = new Koa();
-const koaBody = require('koa-body');
-const koaStatic = require('koa-static');
-const error = require('koa-json-error');
+const koaBody = require('koa-body'); //request body parser, support img
+const koaStatic = require('koa-static'); //static file host
+const error = require('koa-json-error'); //error handle
 const parameter = require('koa-parameter'); //check parameters format,provide verifyParams Method
 const mongoose = require('mongoose');
 const path = require('path');

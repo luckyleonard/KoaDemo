@@ -11,7 +11,10 @@ const {
   updateUser,
   deleteUser,
   login,
-  checkOwner
+  checkOwner,
+  listFollowing,
+  follow,
+  unfollow,
 } = require('../controllers/users');
 
 /*自写middleware
@@ -40,5 +43,11 @@ router.patch('/:id', auth, checkOwner, updateUser); //partly update
 router.delete('/:id', auth, checkOwner, deleteUser);
 
 router.post('/login', login);
+
+router.get('/:id/following', listFollowing);
+
+router.put('/following/:id', auth, follow);
+
+router.delete('/following/:id', auth, unfollow);
 
 module.exports = router;
