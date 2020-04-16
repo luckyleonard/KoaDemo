@@ -98,6 +98,11 @@ class userCtl {
     ctx.body = user.following;
   }
 
+  async listFollowers(ctx) {
+    const users = await User.find({ following: ctx.params.id });
+    ctx.body = users;
+  }
+
   async follow(ctx) {
     const me = await User.findById(ctx.state.user._id).select('+following');
     //获取关注者列表，ctx.state.user._id解析jwt获得用户id

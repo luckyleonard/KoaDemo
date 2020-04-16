@@ -13,6 +13,7 @@ const {
   login,
   checkOwner,
   listFollowing,
+  listFollowers,
   follow,
   unfollow,
 } = require('../controllers/users');
@@ -45,6 +46,8 @@ router.delete('/:id', auth, checkOwner, deleteUser);
 router.post('/login', login);
 
 router.get('/:id/following', listFollowing);
+
+router.get('/:id/followers', listFollowers);
 
 router.put('/following/:id', auth, follow);
 
