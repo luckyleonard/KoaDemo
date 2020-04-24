@@ -1,4 +1,5 @@
 const Topic = require('../models/topics');
+const User = require('../models/users');
 
 class topicCtl {
   async getTopic(ctx) {
@@ -39,6 +40,7 @@ class topicCtl {
     const topic = await new Topic(ctx.request.body).save();
     ctx.body = topic;
   }
+
   async updateTopic(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: false },
@@ -50,6 +52,19 @@ class topicCtl {
       ctx.request.body
     );
     ctx.body = topic;
+  }
+
+  async checkTopicExist(ctx, next) {
+    const topic = await Topic.findById(ctx.params.id);
+    if (!topic) {
+      ctx.throw(404, 'topic is not exist');
+    }
+    await next();
+  }
+
+  async listTopicFollowers(ctx) {
+    const users = await User.find({ followingTopics: ctx.params.id });
+    ctx.body = users;
   }
 }
 

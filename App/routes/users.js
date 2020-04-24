@@ -17,7 +17,12 @@ const {
   follow,
   unfollow,
   checkUserExist,
+  followTopics,
+  unfollowTopics,
+  listFollowingTopics,
 } = require('../controllers/users');
+
+const { checkTopicExist } = require('../controllers/topics');
 
 /*自写middleware
 const auth = async (ctx, next) => {
@@ -53,5 +58,11 @@ router.get('/:id/followers', listFollowers);
 router.put('/following/:id', auth, checkUserExist, follow);
 
 router.delete('/following/:id', auth, checkUserExist, unfollow);
+
+router.get('/:id/followingTopics', listFollowingTopics);
+
+router.put('/followingTopics/:id', auth, checkTopicExist, followTopics);
+
+router.delete('/followingTopics/:id', auth, checkTopicExist, unfollowTopics);
 
 module.exports = router;

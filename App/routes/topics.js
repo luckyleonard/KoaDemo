@@ -8,6 +8,8 @@ const {
   getTopicById,
   createTopic,
   updateTopic,
+  checkTopicExist,
+  listTopicFollowers,
 } = require('../controllers/topics');
 
 const auth = jwt({ secret });
@@ -16,17 +18,17 @@ router.get('/', getTopic);
 
 router.post('/', auth, createTopic);
 
-router.get('/:id', getTopicById);
+router.get('/:id', checkTopicExist, getTopicById);
 
-router.patch('/:id', auth, updateTopic); //partly update
+router.patch('/:id', auth, checkTopicExist, updateTopic); //partly update
+
+router.get('/:id/followers', checkTopicExist, listTopicFollowers);
 
 // router.delete('/:id', auth, checkOwner, deleteUser);
 
 // router.post('/login', login);
 
 // router.get('/:id/following', listFollowing);
-
-// router.get('/:id/followers', listFollowers);
 
 // router.put('/following/:id', auth, checkUserExist, follow);
 

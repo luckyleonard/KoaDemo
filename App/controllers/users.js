@@ -21,7 +21,23 @@ class userCtl {
       .filter((field) => field)
       .map((field) => '+' + field)
       .join(' '); ///使用空格隔开进行拼接 拼出来的字符串 “+location +educations” 用于让API返回指定字段
-    const user = await User.findById(ctx.params.id).select(selectFields);
+    const populateStr = fields
+      .split(';')
+      .filter((field) => field)
+      .map((field) => {
+        if (field === 'employments') {
+          return 'employments.company employments.job';
+        }
+        if (field === 'educations') {
+          return 'educations.school educations.major';
+        }
+        return field;
+      })
+      .join(' ');
+
+    const user = await User.findById(ctx.params.id)
+      .select(selectFields)
+      .populate(populateStr);
     if (!user) {
       ctx.throw(404, 'User is not defined');
     }
@@ -51,7 +67,7 @@ class userCtl {
       headline: { type: 'string', required: false },
       location: { type: 'array', itemType: 'string', required: false },
       business: { type: 'string', required: false },
-      employements: { type: 'array', itemType: 'object', required: false },
+      employments: { type: 'array', itemType: 'object', required: false },
       educations: { type: 'array', itemType: 'object', required: false },
     });
     const { name } = ctx.request.body;
@@ -141,6 +157,49 @@ class userCtl {
       me.save(); //存入数据库
     } //只删除关注的人逻辑
     ctx.status = 204; //返回成功状态
+  }
+
+  async followTopics(ctx) {
+    const myTopics = await User.findById(ctx.state.user._id).select(
+      '+followingTopics'
+    );
+    //获取关注话题列表，ctx.state.user._id解析jwt获得用户id
+    if (
+      !myTopics.followingTopics
+        .map((id) => id.toString())
+        .includes(ctx.params.id)
+    ) {
+      myTopics.followingTopics.push(ctx.params.id);
+      //将id推入followingTopics列表
+      myTopics.save(); //存入数据库
+    } //防止重复逻辑
+    ctx.status = 204; //返回成功状态
+  }
+
+  async unfollowTopics(ctx) {
+    const myTopics = await User.findById(ctx.state.user._id).select(
+      '+followingTopics'
+    );
+    const index = myTopics.followingTopics
+      .map((id) => id.toString())
+      .indexOf(ctx.params.id);
+    //获取取消关注的人的索引
+    if (index > -1) {
+      //index从0开始，如未找到就是-1
+      myTopics.followingTopics.splice(index, 1);
+      myTopics.save(); //存入数据库
+    } //只删除关注的人逻辑
+    ctx.status = 204; //返回成功状态
+  }
+
+  async listFollowingTopics(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select('+followingTopics')
+      .populate('followingTopics');
+    if (!user) {
+      ctx.throw(404, 'user is not existed');
+    }
+    ctx.body = user.followingTopics;
   }
 }
 
