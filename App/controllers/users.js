@@ -4,7 +4,14 @@ const { secret } = require('../config');
 
 class userCtl {
   async getUser(ctx) {
-    ctx.body = await User.find();
+    const { per_page = 5 } = ctx.query; //获取分页默认参数
+    const page = Math.max((ctx.query.page - 1) * 1, 0);
+    //第一页的话则从第0条开始取，第二页则跳过perPage项开始取
+    const perPage = Math.max(per_page * 1, 1);
+    //单页的数量 Math函数返回per_page * 1与1的最大值，去除0或负值
+    ctx.body = await User.find({ name: new RegExp(ctx.query.q) })
+      .limit(perPage)
+      .skip(page * perPage);
   }
 
   async getUserById(ctx) {
