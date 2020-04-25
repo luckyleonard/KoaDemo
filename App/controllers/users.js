@@ -1,6 +1,9 @@
 const jsonwebtoken = require('jsonwebtoken');
+
 const User = require('../models/users');
 const Question = require('../models/questions');
+const Answer = require('../models/answers');
+
 const { secret } = require('../config');
 
 class userCtl {
@@ -206,6 +209,97 @@ class userCtl {
   async listQuestions(ctx) {
     const questions = await Question.find({ questioner: ctx.params.id });
     ctx.body = questions;
+  }
+
+  async listLikingAnswers(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select('+likingAnswers')
+      .populate('likingAnswers');
+    if (!user) {
+      ctx.throw(404, 'user is not existed');
+    }
+    ctx.body = user.likingAnswers;
+  }
+
+  async likeAnswer(ctx, next) {
+    const myLikes = await User.findById(ctx.state.user._id).select(
+      '+likingAnswers'
+    );
+    //获取点赞回答数组，ctx.state.user._id解析jwt获得用户id
+    if (
+      !myLikes.likingAnswers.map((id) => id.toString()).includes(ctx.params.id)
+    ) {
+      myLikes.likingAnswers.push(ctx.params.id);
+      myLikes.save();
+      await Answer.findByIdAndUpdate(ctx.params.id, { $inc: { voteCount: 1 } });
+      //对Answer答案的计数进行自增
+    } //防止重复逻辑
+    ctx.status = 204; //返回成功状态
+    await next();
+  }
+
+  async unlikeAnswer(ctx) {
+    const myLikes = await User.findById(ctx.state.user._id).select(
+      '+likingAnswers'
+    );
+    const index = myLikes.likingAnswers
+      .map((id) => id.toString())
+      .indexOf(ctx.params.id);
+    //寻找这个答案在这个用户上的like
+    if (index > -1) {
+      //index从0开始，如未找到就是-1
+      myLikes.likingAnswers.splice(index, 1);
+      myLikes.save();
+      await Answer.findByIdAndUpdate(ctx.params.id, {
+        $inc: { voteCount: -1 },
+      });
+    }
+
+    ctx.status = 204;
+  }
+
+  async listDislikingAnswers(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select('+dislikingAnswers')
+      .populate('dislikingAnswers');
+    if (!user) {
+      ctx.throw(404, 'user is not existed');
+    }
+    ctx.body = user.dislikingAnswers;
+  }
+
+  async dislikeAnswer(ctx, next) {
+    const myDislikes = await User.findById(ctx.state.user._id).select(
+      '+dislikingAnswers'
+    );
+    //获取踩回答数组，ctx.state.user._id解析jwt获得用户id
+    if (
+      !myDislikes.dislikingAnswers
+        .map((id) => id.toString())
+        .includes(ctx.params.id)
+    ) {
+      myDislikes.dislikingAnswers.push(ctx.params.id);
+      myDislikes.save();
+    } //防止重复逻辑
+    ctx.status = 204; //返回成功状态
+    await next();
+  }
+
+  async undislikeAnswer(ctx) {
+    const myDislikes = await User.findById(ctx.state.user._id).select(
+      '+dislikingAnswers'
+    );
+    const index = myDislikes.dislikingAnswers
+      .map((id) => id.toString())
+      .indexOf(ctx.params.id);
+    //寻找这个答案在这个用户上的dislike
+    if (index > -1) {
+      //index从0开始，如未找到就是-1
+      myDislikes.dislikingAnswers.splice(index, 1);
+      myDislikes.save();
+    }
+
+    ctx.status = 204;
   }
 }
 

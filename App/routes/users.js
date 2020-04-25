@@ -21,9 +21,16 @@ const {
   unfollowTopics,
   listFollowingTopics,
   listQuestions,
+  listLikingAnswers,
+  likeAnswer,
+  unlikeAnswer,
+  listDislikingAnswers,
+  dislikeAnswer,
+  undislikeAnswer,
 } = require('../controllers/users');
 
 const { checkTopicExist } = require('../controllers/topics');
+const { checkAnswerExist } = require('../controllers/answers');
 
 /*自写middleware
 const auth = async (ctx, next) => {
@@ -67,5 +74,29 @@ router.put('/followingTopics/:id', auth, checkTopicExist, followTopics);
 router.delete('/followingTopics/:id', auth, checkTopicExist, unfollowTopics);
 
 router.get('/:id/questions', listQuestions);
+
+router.get('/:id/likingAnswers', listLikingAnswers);
+
+router.put(
+  '/likingAnswers/:id',
+  auth,
+  checkAnswerExist,
+  likeAnswer,
+  undislikeAnswer
+);
+
+router.delete('/likingAnswers/:id', auth, checkAnswerExist, unlikeAnswer);
+
+router.get('/:id/dislikingAnswers', listDislikingAnswers);
+
+router.put(
+  '/dislikingAnswers/:id',
+  auth,
+  checkAnswerExist,
+  dislikeAnswer,
+  unlikeAnswer
+);
+
+router.delete('/dislikingAnswers/:id', auth, checkAnswerExist, undislikeAnswer);
 
 module.exports = router;
