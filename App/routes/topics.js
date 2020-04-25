@@ -10,6 +10,7 @@ const {
   updateTopic,
   checkTopicExist,
   listTopicFollowers,
+  listQuestions,
 } = require('../controllers/topics');
 
 const auth = jwt({ secret });
@@ -23,6 +24,8 @@ router.get('/:id', checkTopicExist, getTopicById);
 router.patch('/:id', auth, checkTopicExist, updateTopic); //partly update
 
 router.get('/:id/followers', checkTopicExist, listTopicFollowers);
+
+router.get('/:id/questions', checkTopicExist, listQuestions);
 
 // router.delete('/:id', auth, checkOwner, deleteUser);
 
