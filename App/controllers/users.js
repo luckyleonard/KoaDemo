@@ -301,6 +301,49 @@ class userCtl {
 
     ctx.status = 204;
   }
+
+  async listCollectAnswers(ctx) {
+    const user = await User.findById(ctx.params.id)
+      .select('+collectingAnswers')
+      .populate('collectingAnswers');
+    if (!user) {
+      ctx.throw(404, 'user is not existed');
+    }
+    ctx.body = user.collectingAnswers;
+  }
+
+  async collectAnswer(ctx) {
+    const myCollects = await User.findById(ctx.state.user._id).select(
+      '+collectingAnswers'
+    );
+
+    if (
+      !myCollects.collectingAnswers
+        .map((id) => id.toString())
+        .includes(ctx.params.id)
+    ) {
+      myCollects.collectingAnswers.push(ctx.params.id);
+      myCollects.save();
+    } //防止重复逻辑
+    ctx.status = 204; //返回成功状态
+  }
+
+  async uncollectAnswer(ctx) {
+    const myCollects = await User.findById(ctx.state.user._id).select(
+      '+collectingAnswers'
+    );
+    const index = myCollects.collectingAnswers
+      .map((id) => id.toString())
+      .indexOf(ctx.params.id);
+
+    if (index > -1) {
+      //index从0开始，如未找到就是-1
+      myCollects.collectingAnswers.splice(index, 1);
+      myCollects.save();
+    }
+
+    ctx.status = 204;
+  }
 }
 
 module.exports = new userCtl();
