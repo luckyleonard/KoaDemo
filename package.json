@@ -19,7 +19,7 @@
     "koa-parameter": "^3.0.1",
     "koa-router": "^8.0.6",
     "koa-static": "^5.0.0",
-    "mongoose": "^5.8.11"
+    "mongoose": "^5.9.13"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
